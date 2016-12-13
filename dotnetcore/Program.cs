@@ -11,8 +11,8 @@ namespace projections
     {
         public static void Main(string[] args)
         {
-           var stream_id = 0;
-           if(args.Count() > 0) stream_id = int.Parse(args[0]);
+           var stream_id = "0";
+           if(args.Count() > 0) stream_id = args[0];
            //var raw_data = new RestEventReader().Read($"http://playing-with-projections.herokuapp.com/stream/{stream_id}");
            //var raw_data = new RestEventReader().Read($"https://raw.githubusercontent.com/tcoopman/playing_with_projections_server/master/data/{stream_id}.json");
            var raw_data = new FileEventReader().Read($"../data/{stream_id}.json");
@@ -21,6 +21,10 @@ namespace projections
 
            Console.WriteLine("Number of events: {0}", projector.NumberOfEvents);
            Console.WriteLine("Number of players that registered: {0}", projector.NumberOfRegisteredPlayers);
+           Console.WriteLine("Number of players that registered per month:");
+           foreach(var item in projector.NumberOfRegisteredPlayersPerMonth){
+             Console.WriteLine("{0} : {1}", item.Item1, item.Item2);
+           }
         }
     }
 
@@ -37,6 +41,18 @@ namespace projections
         get 
         {
           return events.Where(@event => @event.type == "PlayerHasRegistered").Count();
+        }
+      }
+
+      public Tuple<String, int>[] NumberOfRegisteredPlayersPerMonth 
+      {
+        get 
+        {
+          return events
+          .Where(@event => @event.type == "PlayerHasRegistered")
+          .GroupBy(@event => @event.timestamp.Year + "-" + @event.timestamp.Month)
+          .Select(@group => new Tuple<String, int>(@group.Key, @group.Count()))
+          .ToArray();
         }
       }
       //public string[] DistinctEvents{get{return events.GroupBy()}}
