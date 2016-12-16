@@ -42,11 +42,11 @@ let parseEvents json =
     | _ -> failwith "Unrecognized stream"
 
 let fetchStream streamId =
-    Http.RequestString (sprintf "https://playing-with-projections.herokuapp.com/stream/%i" streamId) 
+    Http.RequestString (sprintf "https://playing-with-projections.herokuapp.com/stream/%s" streamId) 
     |> JsonValue.Parse
 
 let readStreamFromFile streamId = 
-    System.IO.File.ReadAllText(__SOURCE_DIRECTORY__ + (sprintf "/%d.json" streamId))
+    System.IO.File.ReadAllText(__SOURCE_DIRECTORY__ + (sprintf "../../data/%s.json" streamId))
     |> JsonValue.Parse
 
 // /!\ WARNING /!\ we disabled intermediate variables display to avoid too long display time in F# interative (make crash VSCode!!)
@@ -63,5 +63,5 @@ fsi.ShowDeclarationValues <- false
    - add an union case for this event in Events type using [JsonProvider type].Root type *)
 
 // SAMPLE: parse of stream 0
-let stream0 = fetchStream 0 |> parseEvents
+let stream0 = fetchStream "0" |> parseEvents
 stream0 |> printfn "%A"
