@@ -1,9 +1,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.IO;
 
 namespace projections
 {
@@ -20,11 +17,6 @@ namespace projections
            var projector = new Projector(events);
 
            Console.WriteLine("Number of events: {0}", projector.NumberOfEvents);
-           Console.WriteLine("Number of players that registered: {0}", projector.NumberOfRegisteredPlayers);
-           Console.WriteLine("Number of players that registered per month:");
-           foreach(var item in projector.NumberOfRegisteredPlayersPerMonth){
-             Console.WriteLine("{0} : {1}", item.Item1, item.Item2);
-           }
         }
     }
 
@@ -36,25 +28,5 @@ namespace projections
         this.events = events;
       }
       public int NumberOfEvents{get{ return events.Count();}}
-      public int NumberOfRegisteredPlayers 
-      {
-        get 
-        {
-          return events.Where(@event => @event.type == "PlayerHasRegistered").Count();
-        }
-      }
-
-      public Tuple<String, int>[] NumberOfRegisteredPlayersPerMonth 
-      {
-        get 
-        {
-          return events
-          .Where(@event => @event.type == "PlayerHasRegistered")
-          .GroupBy(@event => @event.timestamp.Year + "-" + @event.timestamp.Month)
-          .Select(@group => new Tuple<String, int>(@group.Key, @group.Count()))
-          .ToArray();
-        }
-      }
-      //public string[] DistinctEvents{get{return events.GroupBy()}}
     }
 }
